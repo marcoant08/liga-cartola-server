@@ -43,8 +43,8 @@ export class RegisterUserUseCase {
 
     const createdUser = await this.userRepository.create(user);
 
-    // Enviar email com código
-    await this.emailService.sendVerificationCode(dto.email, verificationCode);
+    // // Enviar email com código
+    // await this.emailService.sendVerificationCode(dto.email, verificationCode);
 
     return {
       userId: createdUser.id,

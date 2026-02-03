@@ -2,7 +2,7 @@ import { League } from '../../entities/league.entity';
 import { LeagueMember } from '../../entities/league-member.entity';
 import { Round } from '../../entities/round.entity';
 
-export const LEAGUE_REPOSITORY = 'LEAGUE_REPOSITORY';
+export const LEAGUE_REPOSITORY = 'LEAGUE_REPOSITORY' as const;
 
 export interface ILeagueRepository {
   create(league: League): Promise<League>;

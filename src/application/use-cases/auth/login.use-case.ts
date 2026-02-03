@@ -18,9 +18,8 @@ export class LoginUseCase {
     refreshToken: string;
     user: UserResponseDto;
   }> {
-    console.log('[email]', dto.email);
     const user = await this.userRepository.findByEmail(dto.email);
-    console.log('[user]', user);
+    
     if (!user) {
       throw new UnauthorizedException('Credenciais inválidas');
     }

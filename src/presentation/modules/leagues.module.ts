@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
@@ -20,6 +20,23 @@ import { User, UserSchema } from '@infrastructure/database/mongodb/schemas/user.
 import { LeagueAdminGuard } from '@presentation/guards/league-admin.guard';
 import { JwtStrategy } from '@presentation/strategies/jwt.strategy';
 
+const useCases: Provider[] = [
+  CreateLeagueUseCase,
+  GetUserLeaguesUseCase,
+  GetLeagueDetailsUseCase,
+  UpdateLeagueUseCase,
+  GenerateInviteTokenUseCase,
+  JoinLeagueUseCase,
+  GetLeagueRoundsUseCase,
+];
+
+const guardsAndStrategies: Provider[] = [LeagueAdminGuard, JwtStrategy];
+
+const repositories: Provider[] = [
+  { provide: USER_REPOSITORY, useClass: UserRepository },
+  { provide: LEAGUE_REPOSITORY, useClass: LeagueRepository },
+];
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -30,18 +47,6 @@ import { JwtStrategy } from '@presentation/strategies/jwt.strategy';
     ConfigModule,
   ],
   controllers: [LeaguesController, LeagueRoundsController],
-  providers: [
-    CreateLeagueUseCase,
-    GetUserLeaguesUseCase,
-    GetLeagueDetailsUseCase,
-    UpdateLeagueUseCase,
-    GenerateInviteTokenUseCase,
-    JoinLeagueUseCase,
-    GetLeagueRoundsUseCase,
-    LeagueAdminGuard,
-    JwtStrategy,
-    { provide: USER_REPOSITORY, useClass: UserRepository },
-    { provide: LEAGUE_REPOSITORY, useClass: LeagueRepository },
-  ],
+  providers: [...useCases, ...guardsAndStrategies, ...repositories],
 })
 export class LeaguesModule {}
