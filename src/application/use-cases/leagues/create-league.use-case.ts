@@ -36,8 +36,8 @@ export class CreateLeagueUseCase {
     // Adicionar admin como primeiro membro
     const adminMember = new LeagueMember({
       userId: userId,
+      userName: user.name,
       joinedAt: new Date(),
-      isAdmin: true,
     });
 
     await this.leagueRepository.addMember(createdLeague.id, adminMember);
@@ -63,12 +63,13 @@ export class CreateLeagueUseCase {
       inviteTokenExpiresAt: league.inviteTokenExpiresAt,
       members: league.members.map((m) => ({
         userId: m.userId,
+        userName: m.userName,
         joinedAt: m.joinedAt,
-        isAdmin: m.isAdmin,
       })),
       rounds: league.rounds.map((r) => ({
         roundNumber: r.roundNumber,
         winnerId: r.winnerId,
+        winnerName: r.winnerName,
         registeredAt: r.registeredAt,
         registeredBy: r.registeredBy,
       })),

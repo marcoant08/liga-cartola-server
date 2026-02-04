@@ -11,11 +11,11 @@ export class LeagueMember {
   @Prop({ required: true })
   userId: string;
 
+  @Prop({ required: true })
+  userName: string;
+
   @Prop({ required: true, default: Date.now })
   joinedAt: Date;
-
-  @Prop({ required: true, default: false })
-  isAdmin: boolean;
 }
 
 @Schema({ _id: false })
@@ -25,6 +25,9 @@ export class Round {
 
   @Prop({ required: true })
   winnerId: string;
+
+  @Prop({ required: true })
+  winnerName: string;
 
   @Prop({ required: true, default: Date.now })
   registeredAt: Date;

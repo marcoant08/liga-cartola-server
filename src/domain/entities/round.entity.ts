@@ -1,6 +1,7 @@
 export class Round {
   roundNumber: number;
   winnerId: string;
+  winnerName: string;
   registeredAt: Date;
   registeredBy: string;
 

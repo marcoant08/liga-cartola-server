@@ -31,7 +31,7 @@ export class LeagueRepository implements ILeagueRepository {
         inviteTokenExpiresAt: { $gt: new Date() },
       })
       .exec();
-    return league ? this.toDomain(league) : null;
+    return league ? this.toDomain(league as any) : null;
   }
 
   async findByInviteTokenAny(token: string): Promise<League | null> {
@@ -40,14 +40,15 @@ export class LeagueRepository implements ILeagueRepository {
         inviteToken: token,
       })
       .exec();
-    return league ? this.toDomain(league) : null;
+    return league ? this.toDomain(league as any) : null;
   }
 
   async findByIds(leagueIds: string[]): Promise<League[]> {
     const leagues = await this.leagueModel
       .find({ _id: { $in: leagueIds } })
       .exec();
-    return leagues.map((league) => this.toDomain(league as any));
+    // @ts-ignore-next-line
+    return leagues.map((league) => this.toDomain(league as any) as any);
   }
 
   async update(id: string, data: Partial<League>): Promise<League> {
@@ -65,8 +66,8 @@ export class LeagueRepository implements ILeagueRepository {
       $addToSet: {
         members: {
           userId: member.userId,
+          userName: member.userName,
           joinedAt: member.joinedAt,
-          isAdmin: member.isAdmin,
         },
       },
     });
@@ -78,6 +79,7 @@ export class LeagueRepository implements ILeagueRepository {
         rounds: {
           roundNumber: round.roundNumber,
           winnerId: round.winnerId,
+          winnerName: round.winnerName,
           registeredAt: round.registeredAt,
           registeredBy: round.registeredBy,
         },
@@ -109,8 +111,8 @@ export class LeagueRepository implements ILeagueRepository {
         (m) =>
           new LeagueMember({
             userId: m.userId,
+            userName: m.userName,
             joinedAt: m.joinedAt,
-            isAdmin: m.isAdmin,
           }),
       ),
       rounds: (league.rounds || []).map(
@@ -118,6 +120,7 @@ export class LeagueRepository implements ILeagueRepository {
           new Round({
             roundNumber: r.roundNumber,
             winnerId: r.winnerId,
+            winnerName: r.winnerName,
             registeredAt: r.registeredAt,
             registeredBy: r.registeredBy,
           }),

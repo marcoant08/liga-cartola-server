@@ -5,8 +5,8 @@ export class LeagueMemberResponseDto {
   userId: string;
 
   @ApiProperty()
-  joinedAt: Date;
+  userName: string;
 
   @ApiProperty()
-  isAdmin: boolean;
+  joinedAt: Date;
 }

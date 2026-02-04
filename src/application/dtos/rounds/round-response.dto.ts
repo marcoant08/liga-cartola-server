@@ -8,6 +8,9 @@ export class RoundResponseDto {
   winnerId: string;
 
   @ApiProperty()
+  winnerName: string;
+
+  @ApiProperty()
   registeredAt: Date;
 
   @ApiProperty()

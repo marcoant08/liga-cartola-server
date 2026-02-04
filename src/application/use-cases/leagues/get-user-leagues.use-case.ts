@@ -34,12 +34,13 @@ export class GetUserLeaguesUseCase {
       inviteTokenExpiresAt: league.inviteTokenExpiresAt,
       members: league.members.map((m: any) => ({
         userId: m.userId,
+        userName: m.userName,
         joinedAt: m.joinedAt,
-        isAdmin: m.isAdmin,
       })),
       rounds: league.rounds.map((r: any) => ({
         roundNumber: r.roundNumber,
         winnerId: r.winnerId,
+        winnerName: r.winnerName,
         registeredAt: r.registeredAt,
         registeredBy: r.registeredBy,
       })),

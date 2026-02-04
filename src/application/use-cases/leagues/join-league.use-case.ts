@@ -31,11 +31,17 @@ export class JoinLeagueUseCase {
       throw new BadRequestException('Liga está cheia');
     }
 
+    // Buscar dados do usuário para obter o nome
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
     // Adicionar membro à liga
     const member = new LeagueMember({
       userId: userId,
+      userName: user.name,
       joinedAt: new Date(),
-      isAdmin: false,
     });
 
     await this.leagueRepository.addMember(league.id, member);
@@ -64,12 +70,13 @@ export class JoinLeagueUseCase {
       inviteTokenExpiresAt: league.inviteTokenExpiresAt,
       members: league.members.map((m: any) => ({
         userId: m.userId,
+        userName: m.userName,
         joinedAt: m.joinedAt,
-        isAdmin: m.isAdmin,
       })),
       rounds: league.rounds.map((r: any) => ({
         roundNumber: r.roundNumber,
         winnerId: r.winnerId,
+        winnerName: r.winnerName,
         registeredAt: r.registeredAt,
         registeredBy: r.registeredBy,
       })),

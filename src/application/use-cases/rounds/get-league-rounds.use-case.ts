@@ -23,6 +23,7 @@ export class GetLeagueRoundsUseCase {
       rounds: league.rounds.map((r) => ({
         roundNumber: r.roundNumber,
         winnerId: r.winnerId,
+        winnerName: r.winnerName,
         registeredAt: r.registeredAt,
         registeredBy: r.registeredBy,
       })),

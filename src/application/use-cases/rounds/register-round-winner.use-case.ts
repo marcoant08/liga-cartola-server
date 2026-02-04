@@ -1,13 +1,17 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { ILeagueRepository, LEAGUE_REPOSITORY } from '@domain/interfaces/repositories/league.repository.interface';
+import { IUserRepository, USER_REPOSITORY } from '@domain/interfaces/repositories/user.repository.interface';
 import { RegisterRoundWinnerDto } from '@application/dtos/rounds/register-round-winner.dto';
 import { Round } from '@domain/entities/round.entity';
 import { RoundResponseDto } from '@application/dtos/rounds/round-response.dto';
 
 @Injectable()
 export class RegisterRoundWinnerUseCase {
-  constructor(@Inject(LEAGUE_REPOSITORY) private leagueRepository: ILeagueRepository) {}
+  constructor(
+    @Inject(LEAGUE_REPOSITORY) private leagueRepository: ILeagueRepository,
+    @Inject(USER_REPOSITORY) private userRepository: IUserRepository,
+  ) {}
 
   async execute(dto: RegisterRoundWinnerDto, adminId: string): Promise<RoundResponseDto> {
     const league = await this.leagueRepository.findById(dto.leagueId);
@@ -32,10 +36,17 @@ export class RegisterRoundWinnerUseCase {
       throw new BadRequestException('Número da rodada deve estar entre 1 e 38');
     }
 
+    // Buscar dados do usuário vencedor para obter o nome
+    const winner = await this.userRepository.findById(dto.winnerId);
+    if (!winner) {
+      throw new NotFoundException('Usuário vencedor não encontrado');
+    }
+
     // Criar rodada
     const round = new Round({
       roundNumber: dto.roundNumber,
       winnerId: dto.winnerId,
+      winnerName: winner.name,
       registeredAt: new Date(),
       registeredBy: adminId,
     });
@@ -45,6 +56,7 @@ export class RegisterRoundWinnerUseCase {
     return {
       roundNumber: round.roundNumber,
       winnerId: round.winnerId,
+      winnerName: round.winnerName,
       registeredAt: round.registeredAt,
       registeredBy: round.registeredBy,
     };
