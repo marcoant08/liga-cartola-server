@@ -23,6 +23,6 @@ export class RoundsController {
   @ApiResponse({ status: 403, description: 'Não é admin' })
   @ApiResponse({ status: 404, description: 'Liga não encontrada' })
   async registerRoundWinner(@CurrentUser() user: { sub: string }, @Body() dto: RegisterRoundWinnerDto) {
-    return this.registerRoundWinnerUseCase.execute(dto, user.sub);
+    return this.registerRoundWinnerUseCase.execute(dto);
   }
 }
