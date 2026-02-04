@@ -28,12 +28,15 @@ export class RegisterUserUseCase {
     // Hash da senha
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
+    // Gerar nome a partir do email se não fornecido
+    const name = dto.name || dto.email.split('@')[0];
+
     // Criar usuário
     const user = new User({
       email: dto.email.toLowerCase(),
-      name: dto.name,
-      teamName: dto.teamName,
-      pixKey: dto.pixKey,
+      name: name,
+      teamName: dto.teamName || '',
+      pixKey: dto.pixKey || '',
       password: hashedPassword,
       emailVerified: false,
       emailVerificationCode: verificationCode,

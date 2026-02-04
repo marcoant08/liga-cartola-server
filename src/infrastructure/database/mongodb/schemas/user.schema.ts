@@ -14,10 +14,10 @@ export class User {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ default: '' })
   teamName: string;
 
-  @Prop({ required: true })
+  @Prop({ default: '' })
   pixKey: string;
 
   @Prop({ default: false })
