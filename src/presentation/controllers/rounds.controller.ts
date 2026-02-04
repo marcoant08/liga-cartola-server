@@ -5,7 +5,6 @@ import { RegisterRoundWinnerDto } from '@application/dtos/rounds/register-round-
 import { RoundResponseDto } from '@application/dtos/rounds/round-response.dto';
 import { JwtAuthGuard } from '@presentation/guards/jwt-auth.guard';
 import { LeagueAdminGuard } from '@presentation/guards/league-admin.guard';
-import { CurrentUser } from '@presentation/decorators/current-user.decorator';
 
 @ApiTags('Rounds')
 @Controller('rounds')
@@ -22,7 +21,7 @@ export class RoundsController {
   @ApiResponse({ status: 401, description: 'Não autenticado' })
   @ApiResponse({ status: 403, description: 'Não é admin' })
   @ApiResponse({ status: 404, description: 'Liga não encontrada' })
-  async registerRoundWinner(@CurrentUser() user: { sub: string }, @Body() dto: RegisterRoundWinnerDto) {
+  async registerRoundWinner(@Body() dto: RegisterRoundWinnerDto) {
     return this.registerRoundWinnerUseCase.execute(dto);
   }
 }
