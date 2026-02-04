@@ -25,16 +25,12 @@ export class RegisterRoundWinnerUseCase {
       throw new BadRequestException('O vencedor deve ser membro da liga');
     }
 
-    // Verificar se rodada já existe
-    const existingRound = league.rounds.find((r) => r.roundNumber === dto.roundNumber);
-    if (existingRound) {
-      throw new BadRequestException('Rodada já registrada');
-    }
-
     // Validar número da rodada (1-38)
     if (dto.roundNumber < 1 || dto.roundNumber > 38) {
       throw new BadRequestException('Número da rodada deve estar entre 1 e 38');
     }
+
+    // Nota: Se a rodada já existir, será sobrescrita automaticamente pelo repositório
 
     // Buscar dados do usuário vencedor para obter o nome
     const winner = await this.userRepository.findById(dto.winnerId);

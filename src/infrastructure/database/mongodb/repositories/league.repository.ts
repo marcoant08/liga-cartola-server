@@ -74,6 +74,16 @@ export class LeagueRepository implements ILeagueRepository {
   }
 
   async addRound(leagueId: string, round: Round): Promise<void> {
+    // Primeiro, remover a rodada existente se houver (sobrescrever)
+    await this.leagueModel.findByIdAndUpdate(leagueId, {
+      $pull: {
+        rounds: {
+          roundNumber: round.roundNumber,
+        },
+      },
+    });
+
+    // Depois, adicionar a nova rodada
     await this.leagueModel.findByIdAndUpdate(leagueId, {
       $push: {
         rounds: {
