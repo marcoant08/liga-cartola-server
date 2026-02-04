@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './presentation/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,12 +10,22 @@ async function bootstrap() {
   // CORS
   app.enableCors();
 
-  // Global validation pipe
+  // Global Exception Filter - captura todas as exceções
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Global validation pipe com tratamento de erros customizado
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: (errors) => {
+        const messages = errors.map((error) => {
+          const constraints = error.constraints || {};
+          return Object.values(constraints).join(', ');
+        });
+        return new BadRequestException(messages);
+      },
     }),
   );
 
