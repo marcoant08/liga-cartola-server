@@ -16,12 +16,12 @@ export class LeagueRepository implements ILeagueRepository {
   async create(league: League): Promise<League> {
     const createdLeague = new this.leagueModel(league);
     const saved = await createdLeague.save();
-    return this.toDomain(saved);
+    return this.toDomain(saved as any);
   }
 
   async findById(id: string): Promise<League | null> {
     const league = await this.leagueModel.findById(id).exec();
-    return league ? this.toDomain(league) : null;
+    return league ? this.toDomain(league as any) : null;
   }
 
   async findByInviteToken(token: string): Promise<League | null> {
@@ -34,11 +34,20 @@ export class LeagueRepository implements ILeagueRepository {
     return league ? this.toDomain(league) : null;
   }
 
+  async findByInviteTokenAny(token: string): Promise<League | null> {
+    const league = await this.leagueModel
+      .findOne({
+        inviteToken: token,
+      })
+      .exec();
+    return league ? this.toDomain(league) : null;
+  }
+
   async findByIds(leagueIds: string[]): Promise<League[]> {
     const leagues = await this.leagueModel
       .find({ _id: { $in: leagueIds } })
       .exec();
-    return leagues.map((league) => this.toDomain(league));
+    return leagues.map((league) => this.toDomain(league as any));
   }
 
   async update(id: string, data: Partial<League>): Promise<League> {

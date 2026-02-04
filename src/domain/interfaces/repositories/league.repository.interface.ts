@@ -8,6 +8,7 @@ export interface ILeagueRepository {
   create(league: League): Promise<League>;
   findById(id: string): Promise<League | null>;
   findByInviteToken(token: string): Promise<League | null>;
+  findByInviteTokenAny(token: string): Promise<League | null>;
   findByIds(leagueIds: string[]): Promise<League[]>;
   update(id: string, data: Partial<League>): Promise<League>;
   addMember(leagueId: string, member: LeagueMember): Promise<void>;
