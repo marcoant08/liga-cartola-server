@@ -25,7 +25,6 @@ export class GetLeagueRoundsUseCase {
         winnerId: r.winnerId,
         winnerName: r.winnerName,
         registeredAt: r.registeredAt,
-        registeredBy: r.registeredBy,
       })),
     };
   }

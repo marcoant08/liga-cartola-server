@@ -39,7 +39,6 @@ export class UpdateLeagueUseCase {
         winnerId: r.winnerId,
         winnerName: r.winnerName,
         registeredAt: r.registeredAt,
-        registeredBy: r.registeredBy,
       })),
       createdAt: league.createdAt,
       updatedAt: league.updatedAt,

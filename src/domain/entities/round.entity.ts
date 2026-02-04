@@ -3,7 +3,6 @@ export class Round {
   winnerId: string;
   winnerName: string;
   registeredAt: Date;
-  registeredBy: string;
 
   constructor(partial: Partial<Round>) {
     Object.assign(this, partial);

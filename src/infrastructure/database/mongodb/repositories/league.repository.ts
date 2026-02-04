@@ -91,7 +91,6 @@ export class LeagueRepository implements ILeagueRepository {
           winnerId: round.winnerId,
           winnerName: round.winnerName,
           registeredAt: round.registeredAt,
-          registeredBy: round.registeredBy,
         },
       },
     });
@@ -132,7 +131,6 @@ export class LeagueRepository implements ILeagueRepository {
             winnerId: r.winnerId,
             winnerName: r.winnerName,
             registeredAt: r.registeredAt,
-            registeredBy: r.registeredBy,
           }),
       ),
       createdAt: league.createdAt,

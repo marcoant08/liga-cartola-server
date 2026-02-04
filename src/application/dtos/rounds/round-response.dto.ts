@@ -12,7 +12,4 @@ export class RoundResponseDto {
 
   @ApiProperty()
   registeredAt: Date;
-
-  @ApiProperty()
-  registeredBy: string;
 }

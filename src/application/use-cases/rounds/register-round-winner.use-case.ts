@@ -44,7 +44,6 @@ export class RegisterRoundWinnerUseCase {
       winnerId: dto.winnerId,
       winnerName: winner.name,
       registeredAt: new Date(),
-      registeredBy: adminId,
     });
 
     await this.leagueRepository.addRound(dto.leagueId, round);
@@ -54,7 +53,6 @@ export class RegisterRoundWinnerUseCase {
       winnerId: round.winnerId,
       winnerName: round.winnerName,
       registeredAt: round.registeredAt,
-      registeredBy: round.registeredBy,
     };
   }
 }

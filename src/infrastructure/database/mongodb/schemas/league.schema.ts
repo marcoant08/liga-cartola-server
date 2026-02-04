@@ -31,9 +31,6 @@ export class Round {
 
   @Prop({ required: true, default: Date.now })
   registeredAt: Date;
-
-  @Prop({ required: true })
-  registeredBy: string;
 }
 
 @Schema({ timestamps: true })
