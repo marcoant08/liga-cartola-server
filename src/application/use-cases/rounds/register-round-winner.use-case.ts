@@ -13,7 +13,7 @@ export class RegisterRoundWinnerUseCase {
     @Inject(USER_REPOSITORY) private userRepository: IUserRepository,
   ) {}
 
-  async execute(dto: RegisterRoundWinnerDto, adminId: string): Promise<RoundResponseDto> {
+  async execute(dto: RegisterRoundWinnerDto): Promise<RoundResponseDto> {
     const league = await this.leagueRepository.findById(dto.leagueId);
     if (!league) {
       throw new NotFoundException('Liga não encontrada');
