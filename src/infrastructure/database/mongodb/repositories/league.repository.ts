@@ -68,8 +68,17 @@ export class LeagueRepository implements ILeagueRepository {
           userId: member.userId,
           userName: member.userName,
           joinedAt: member.joinedAt,
+          isGuest: member.isGuest ?? false,
+          pixKey: member.pixKey ?? '',
+          teamName: member.teamName ?? '',
         },
       },
+    });
+  }
+
+  async removeMember(leagueId: string, userId: string): Promise<void> {
+    await this.leagueModel.findByIdAndUpdate(leagueId, {
+      $pull: { members: { userId } },
     });
   }
 
@@ -122,6 +131,9 @@ export class LeagueRepository implements ILeagueRepository {
             userId: m.userId,
             userName: m.userName,
             joinedAt: m.joinedAt,
+            isGuest: m.isGuest,
+            pixKey: m.pixKey,
+            teamName: m.teamName,
           }),
       ),
       rounds: (league.rounds || []).map(

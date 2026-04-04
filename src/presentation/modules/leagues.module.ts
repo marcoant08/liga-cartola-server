@@ -10,6 +10,8 @@ import { GetLeagueDetailsUseCase } from '@application/use-cases/leagues/get-leag
 import { UpdateLeagueUseCase } from '@application/use-cases/leagues/update-league.use-case';
 import { GenerateInviteTokenUseCase } from '@application/use-cases/leagues/generate-invite-token.use-case';
 import { JoinLeagueUseCase } from '@application/use-cases/leagues/join-league.use-case';
+import { AddGuestMemberUseCase } from '@application/use-cases/leagues/add-guest-member.use-case';
+import { RemoveLeagueMemberUseCase } from '@application/use-cases/leagues/remove-league-member.use-case';
 import { GetLeagueRoundsUseCase } from '@application/use-cases/rounds/get-league-rounds.use-case';
 import { LeagueRepository } from '@infrastructure/database/mongodb/repositories/league.repository';
 import { LEAGUE_REPOSITORY } from '@domain/interfaces/repositories/league.repository.interface';
@@ -27,6 +29,8 @@ const useCases: Provider[] = [
   UpdateLeagueUseCase,
   GenerateInviteTokenUseCase,
   JoinLeagueUseCase,
+  AddGuestMemberUseCase,
+  RemoveLeagueMemberUseCase,
   GetLeagueRoundsUseCase,
 ];
 

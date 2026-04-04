@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { CreateLeagueUseCase } from '@application/use-cases/leagues/create-league.use-case';
 import { GetUserLeaguesUseCase } from '@application/use-cases/leagues/get-user-leagues.use-case';
@@ -6,11 +6,15 @@ import { GetLeagueDetailsUseCase } from '@application/use-cases/leagues/get-leag
 import { UpdateLeagueUseCase } from '@application/use-cases/leagues/update-league.use-case';
 import { GenerateInviteTokenUseCase } from '@application/use-cases/leagues/generate-invite-token.use-case';
 import { JoinLeagueUseCase } from '@application/use-cases/leagues/join-league.use-case';
+import { AddGuestMemberUseCase } from '@application/use-cases/leagues/add-guest-member.use-case';
+import { RemoveLeagueMemberUseCase } from '@application/use-cases/leagues/remove-league-member.use-case';
 import { CreateLeagueDto } from '@application/dtos/leagues/create-league.dto';
 import { UpdateLeagueDto } from '@application/dtos/leagues/update-league.dto';
 import { GenerateInviteTokenDto } from '@application/dtos/leagues/generate-invite-token.dto';
 import { JoinLeagueDto } from '@application/dtos/leagues/join-league.dto';
+import { AddGuestMemberDto } from '@application/dtos/leagues/add-guest-member.dto';
 import { LeagueResponseDto } from '@application/dtos/leagues/league-response.dto';
+import { LeagueMemberResponseDto } from '@application/dtos/leagues/league-member-response.dto';
 import { JwtAuthGuard } from '@presentation/guards/jwt-auth.guard';
 import { LeagueAdminGuard } from '@presentation/guards/league-admin.guard';
 import { CurrentUser } from '@presentation/decorators/current-user.decorator';
@@ -27,6 +31,8 @@ export class LeaguesController {
     private updateLeagueUseCase: UpdateLeagueUseCase,
     private generateInviteTokenUseCase: GenerateInviteTokenUseCase,
     private joinLeagueUseCase: JoinLeagueUseCase,
+    private addGuestMemberUseCase: AddGuestMemberUseCase,
+    private removeLeagueMemberUseCase: RemoveLeagueMemberUseCase,
   ) {}
 
   @Post()
@@ -68,6 +74,33 @@ export class LeaguesController {
   @ApiResponse({ status: 404, description: 'Liga não encontrada' })
   async update(@Param('id') id: string, @Body() dto: UpdateLeagueDto) {
     return this.updateLeagueUseCase.execute(id, dto);
+  }
+
+  @Post(':id/members')
+  @UseGuards(LeagueAdminGuard)
+  @ApiOperation({ summary: 'Adicionar membro convidado (apenas admin)' })
+  @ApiParam({ name: 'id', description: 'ID da liga' })
+  @ApiResponse({ status: 201, description: 'Convidado adicionado', type: LeagueMemberResponseDto })
+  @ApiResponse({ status: 400, description: 'Liga cheia ou dados inválidos' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({ status: 403, description: 'Não é admin' })
+  @ApiResponse({ status: 404, description: 'Liga não encontrada' })
+  async addGuestMember(@Param('id') id: string, @Body() dto: AddGuestMemberDto) {
+    return this.addGuestMemberUseCase.execute(id, dto);
+  }
+
+  @Delete(':id/members/:memberId')
+  @UseGuards(LeagueAdminGuard)
+  @ApiOperation({ summary: 'Remover membro da liga (apenas admin)' })
+  @ApiParam({ name: 'id', description: 'ID da liga' })
+  @ApiParam({ name: 'memberId', description: 'userId do membro na liga' })
+  @ApiResponse({ status: 200, description: 'Membro removido', type: LeagueResponseDto })
+  @ApiResponse({ status: 400, description: 'Não é possível remover o administrador' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({ status: 403, description: 'Não é admin' })
+  @ApiResponse({ status: 404, description: 'Liga ou membro não encontrado' })
+  async removeMember(@Param('id') id: string, @Param('memberId') memberId: string) {
+    return this.removeLeagueMemberUseCase.execute(id, memberId);
   }
 
   @Post(':id/invite-token')

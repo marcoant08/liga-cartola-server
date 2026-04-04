@@ -32,17 +32,23 @@ export class RegisterRoundWinnerUseCase {
 
     // Nota: Se a rodada já existir, será sobrescrita automaticamente pelo repositório
 
-    // Buscar dados do usuário vencedor para obter o nome
-    const winner = await this.userRepository.findById(dto.winnerId);
-    if (!winner) {
-      throw new NotFoundException('Usuário vencedor não encontrado');
+    const leagueMember = league.members.find((m) => m.userId === dto.winnerId);
+    let winnerName: string;
+    if (leagueMember?.isGuest) {
+      winnerName = leagueMember.userName;
+    } else {
+      const winner = await this.userRepository.findById(dto.winnerId);
+      if (!winner) {
+        throw new NotFoundException('Usuário vencedor não encontrado');
+      }
+      winnerName = winner.name;
     }
 
     // Criar rodada
     const round = new Round({
       roundNumber: dto.roundNumber,
       winnerId: dto.winnerId,
-      winnerName: winner.name,
+      winnerName,
       registeredAt: new Date(),
     });
 

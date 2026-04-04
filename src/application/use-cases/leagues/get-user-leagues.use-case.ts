@@ -36,6 +36,9 @@ export class GetUserLeaguesUseCase {
         userId: m.userId,
         userName: m.userName,
         joinedAt: m.joinedAt,
+        isGuest: !!m.isGuest,
+        pixKey: m.pixKey || undefined,
+        teamName: m.teamName || undefined,
       })),
       rounds: league.rounds.map((r: any) => ({
         roundNumber: r.roundNumber,

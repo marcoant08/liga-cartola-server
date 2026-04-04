@@ -38,6 +38,7 @@ export class CreateLeagueUseCase {
       userId: userId,
       userName: user.name,
       joinedAt: new Date(),
+      isGuest: false,
     });
 
     await this.leagueRepository.addMember(createdLeague.id, adminMember);
@@ -65,6 +66,9 @@ export class CreateLeagueUseCase {
         userId: m.userId,
         userName: m.userName,
         joinedAt: m.joinedAt,
+        isGuest: !!m.isGuest,
+        pixKey: m.pixKey || undefined,
+        teamName: m.teamName || undefined,
       })),
       rounds: league.rounds.map((r) => ({
         roundNumber: r.roundNumber,

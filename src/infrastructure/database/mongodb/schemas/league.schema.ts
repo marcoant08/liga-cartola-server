@@ -16,6 +16,15 @@ export class LeagueMember {
 
   @Prop({ required: true, default: Date.now })
   joinedAt: Date;
+
+  @Prop({ default: false })
+  isGuest: boolean;
+
+  @Prop({ default: '' })
+  pixKey: string;
+
+  @Prop({ default: '' })
+  teamName: string;
 }
 
 @Schema({ _id: false })

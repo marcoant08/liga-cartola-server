@@ -1,25 +1,47 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { ILeagueRepository, LEAGUE_REPOSITORY } from '@domain/interfaces/repositories/league.repository.interface';
+import { IUserRepository, USER_REPOSITORY } from '@domain/interfaces/repositories/user.repository.interface';
 import { LeagueResponseDto } from '@application/dtos/leagues/league-response.dto';
 
 @Injectable()
-export class GetLeagueDetailsUseCase {
-  constructor(@Inject(LEAGUE_REPOSITORY) private leagueRepository: ILeagueRepository) {}
+export class RemoveLeagueMemberUseCase {
+  constructor(
+    @Inject(LEAGUE_REPOSITORY) private leagueRepository: ILeagueRepository,
+    @Inject(USER_REPOSITORY) private userRepository: IUserRepository,
+  ) {}
 
-  async execute(leagueId: string, userId: string): Promise<LeagueResponseDto> {
+  async execute(leagueId: string, memberId: string): Promise<LeagueResponseDto> {
     const league = await this.leagueRepository.findById(leagueId);
     if (!league) {
       throw new NotFoundException('Liga não encontrada');
     }
 
-    // Verificar se usuário é membro
-    const isMember = await this.leagueRepository.checkMemberExists(leagueId, userId);
-    if (!isMember) {
-      throw new ForbiddenException('Você não é membro desta liga');
+    if (memberId === league.adminId) {
+      throw new BadRequestException('Não é possível remover o administrador da liga');
     }
 
-    return this.toResponseDto(league);
+    const member = league.members.find((m) => m.userId === memberId);
+    if (!member) {
+      throw new NotFoundException('Membro não encontrado nesta liga');
+    }
+
+    await this.leagueRepository.removeMember(leagueId, memberId);
+
+    if (!member.isGuest) {
+      await this.userRepository.removeLeague(memberId, leagueId);
+    }
+
+    const updatedLeague = await this.leagueRepository.findById(leagueId);
+    if (!updatedLeague) {
+      throw new NotFoundException('Liga não encontrada');
+    }
+
+    return this.toResponseDto(updatedLeague);
   }
 
   private toResponseDto(league: any): LeagueResponseDto {

@@ -12,6 +12,7 @@ export interface ILeagueRepository {
   findByIds(leagueIds: string[]): Promise<League[]>;
   update(id: string, data: Partial<League>): Promise<League>;
   addMember(leagueId: string, member: LeagueMember): Promise<void>;
+  removeMember(leagueId: string, userId: string): Promise<void>;
   addRound(leagueId: string, round: Round): Promise<void>;
   checkMemberExists(leagueId: string, userId: string): Promise<boolean>;
 }
