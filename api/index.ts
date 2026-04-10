@@ -1,8 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import path from 'path';
 
-// Compilado pelo Nest antes do deploy; CommonJS em dist/
+// Em produção: api/_nest_dist/ é preenchido por scripts/prepare-vercel-api.cjs após nest build
+const vercelEntry = path.join(__dirname, '_nest_dist', 'vercel.js');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { createServerlessHandler } = require('../dist/vercel.js') as {
+const { createServerlessHandler } = require(vercelEntry) as {
   createServerlessHandler: () => Promise<
     (req: VercelRequest, res: VercelResponse) => unknown
   >;
