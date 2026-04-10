@@ -13,7 +13,7 @@
   "functions": {
     "api/index.ts": {
       "memory": 1024,
-      "maxDuration": 10,
+      "maxDuration": 60,
       "includeFiles": "api/_nest_dist/**"
     }
   }

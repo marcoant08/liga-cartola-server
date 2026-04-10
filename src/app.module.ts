@@ -5,17 +5,36 @@ import { AuthModule } from './presentation/modules/auth.module';
 import { UsersModule } from './presentation/modules/users.module';
 import { LeaguesModule } from './presentation/modules/leagues.module';
 import { RoundsModule } from './presentation/modules/rounds.module';
+import { RootController } from './presentation/controllers/root.controller';
+
+function mongoUriOrThrow(): string {
+  const uri = process.env.MONGODB_URI;
+  if (uri?.trim()) {
+    return uri.trim();
+  }
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'MONGODB_URI não está definida. Configure a variável no painel da Vercel (Settings → Environment Variables).',
+    );
+  }
+  return 'mongodb://localhost:27017/cartola';
+}
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/cartola'),
+    MongooseModule.forRoot(mongoUriOrThrow(), {
+      serverSelectionTimeoutMS: 8_000,
+      connectTimeoutMS: 8_000,
+      maxPoolSize: 5,
+    }),
     AuthModule,
     UsersModule,
     LeaguesModule,
     RoundsModule,
   ],
+  controllers: [RootController],
 })
 export class AppModule {}
