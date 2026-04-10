@@ -42,7 +42,9 @@ export class JoinLeagueUseCase {
       userId: userId,
       userName: user.name,
       joinedAt: new Date(),
-      isGuest: false,
+      isGuest: dto.isGuest,
+      pixKey: dto.pixKey.trim(),
+      teamName: dto.teamName.trim(),
     });
 
     await this.leagueRepository.addMember(league.id, member);
@@ -74,8 +76,8 @@ export class JoinLeagueUseCase {
         userName: m.userName,
         joinedAt: m.joinedAt,
         isGuest: !!m.isGuest,
-        pixKey: m.pixKey || undefined,
-        teamName: m.teamName || undefined,
+        pixKey: m.pixKey ?? '',
+        teamName: m.teamName ?? '',
       })),
       rounds: league.rounds.map((r: any) => ({
         roundNumber: r.roundNumber,

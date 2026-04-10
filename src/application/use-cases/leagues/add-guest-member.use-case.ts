@@ -25,9 +25,9 @@ export class AddGuestMemberUseCase {
       userId: guestId,
       userName: dto.name.trim(),
       joinedAt: new Date(),
-      isGuest: true,
-      pixKey: dto.pixKey?.trim() ?? '',
-      teamName: dto.teamName?.trim() ?? '',
+      isGuest: dto.isGuest,
+      pixKey: dto.pixKey.trim(),
+      teamName: dto.teamName.trim(),
     });
 
     await this.leagueRepository.addMember(leagueId, member);
@@ -41,8 +41,8 @@ export class AddGuestMemberUseCase {
       userName: m.userName,
       joinedAt: m.joinedAt,
       isGuest: !!m.isGuest,
-      pixKey: m.pixKey || undefined,
-      teamName: m.teamName || undefined,
+      pixKey: m.pixKey ?? '',
+      teamName: m.teamName ?? '',
     };
   }
 }

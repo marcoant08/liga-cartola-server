@@ -17,13 +17,13 @@ export class LeagueMember {
   @Prop({ required: true, default: Date.now })
   joinedAt: Date;
 
-  @Prop({ default: false })
+  @Prop({ required: true })
   isGuest: boolean;
 
-  @Prop({ default: '' })
+  @Prop({ required: true })
   pixKey: string;
 
-  @Prop({ default: '' })
+  @Prop({ required: true })
   teamName: string;
 }
 

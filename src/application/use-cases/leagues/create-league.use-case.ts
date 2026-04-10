@@ -20,6 +20,14 @@ export class CreateLeagueUseCase {
       throw new BadRequestException('Usuário não encontrado');
     }
 
+    const pixKey = (user.pixKey ?? '').trim();
+    const teamName = (user.teamName ?? '').trim();
+    if (!pixKey || !teamName) {
+      throw new BadRequestException(
+        'Complete chave Pix e nome do time no perfil antes de criar uma liga.',
+      );
+    }
+
     // Criar liga
     const league = new League({
       name: dto.name,
@@ -39,6 +47,8 @@ export class CreateLeagueUseCase {
       userName: user.name,
       joinedAt: new Date(),
       isGuest: false,
+      pixKey,
+      teamName,
     });
 
     await this.leagueRepository.addMember(createdLeague.id, adminMember);
@@ -67,8 +77,8 @@ export class CreateLeagueUseCase {
         userName: m.userName,
         joinedAt: m.joinedAt,
         isGuest: !!m.isGuest,
-        pixKey: m.pixKey || undefined,
-        teamName: m.teamName || undefined,
+        pixKey: m.pixKey ?? '',
+        teamName: m.teamName ?? '',
       })),
       rounds: league.rounds.map((r) => ({
         roundNumber: r.roundNumber,

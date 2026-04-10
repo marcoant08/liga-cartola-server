@@ -59,8 +59,8 @@ export class RemoveLeagueMemberUseCase {
         userName: m.userName,
         joinedAt: m.joinedAt,
         isGuest: !!m.isGuest,
-        pixKey: m.pixKey || undefined,
-        teamName: m.teamName || undefined,
+        pixKey: m.pixKey ?? '',
+        teamName: m.teamName ?? '',
       })),
       rounds: league.rounds.map((r: any) => ({
         roundNumber: r.roundNumber,

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsBoolean, Equals } from 'class-validator';
 
 export class AddGuestMemberDto {
   @ApiProperty({ example: 'João Convidado' })
@@ -7,13 +7,20 @@ export class AddGuestMemberDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 'joao@email.com', required: false })
+  @ApiProperty({ example: 'joao@email.com' })
   @IsString()
-  @IsOptional()
-  pixKey?: string;
+  @IsNotEmpty()
+  @MaxLength(200)
+  pixKey: string;
 
-  @ApiProperty({ example: 'Time do João', required: false })
+  @ApiProperty({ example: 'Time do João' })
   @IsString()
-  @IsOptional()
-  teamName?: string;
+  @IsNotEmpty()
+  @MaxLength(100)
+  teamName: string;
+
+  @ApiProperty({ example: true, description: 'Membro convidado sem conta (sempre true)' })
+  @IsBoolean()
+  @Equals(true)
+  isGuest: boolean;
 }

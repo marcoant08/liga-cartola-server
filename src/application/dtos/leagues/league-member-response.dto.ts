@@ -13,9 +13,9 @@ export class LeagueMemberResponseDto {
   @ApiProperty({ description: 'Membro cadastrado manualmente sem conta no sistema' })
   isGuest: boolean;
 
-  @ApiProperty({ required: false })
-  pixKey?: string;
+  @ApiProperty()
+  pixKey: string;
 
-  @ApiProperty({ required: false })
-  teamName?: string;
+  @ApiProperty()
+  teamName: string;
 }
