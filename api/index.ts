@@ -1,3 +1,4 @@
+import './vercel-nft-imports';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import path from 'path';
 
