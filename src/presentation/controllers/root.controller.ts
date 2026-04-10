@@ -1,10 +1,10 @@
-import { Controller, Get, Redirect } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
+import type { Response } from 'express';
 
 @Controller()
 export class RootController {
   @Get()
-  @Redirect('/swagger', 302)
-  getRoot(): void {
-    // @Redirect envia 302 para a documentação
+  getRoot(@Res() res: Response): void {
+    res.redirect(302, '/swagger');
   }
 }
