@@ -16,7 +16,7 @@ export async function createServerlessHandler(): Promise<ReturnType<typeof serve
   const expressApp = express();
   const adapter = new ExpressAdapter(expressApp);
   const app = await NestFactory.create(AppModule, adapter, {
-    logger: process.env.VERCEL ? ['error', 'warn'] : undefined,
+    logger: ['log', 'error', 'warn'],
   });
   applyAppSettings(app);
   await app.init();
