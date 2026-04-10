@@ -1,6 +1,7 @@
 # compiled output
 /dist
 api/_nest_dist
+*.tsbuildinfo
 /node_modules
 
 # Logs

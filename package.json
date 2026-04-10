@@ -13,7 +13,7 @@
   "main": ".eslintrc.js",
   "scripts": {
     "build": "nest build",
-    "vercel-build": "nest build && node scripts/prepare-vercel-api.cjs",
+    "vercel-build": "node scripts/clean-for-vercel-build.cjs && nest build && node scripts/prepare-vercel-api.cjs",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
