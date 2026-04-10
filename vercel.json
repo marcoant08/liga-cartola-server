@@ -4,17 +4,16 @@
   "installCommand": "NODE_ENV=development pnpm install --frozen-lockfile",
   "outputDirectory": "public",
   "framework": null,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api"
-    }
-  ],
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
       "memory": 1024,
-      "maxDuration": 15,
-      "includeFiles": "api/_nest_dist/**"
+      "maxDuration": 15
     }
-  }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
+    }
+  ]
 }
