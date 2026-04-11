@@ -35,6 +35,7 @@ export class CreateLeagueUseCase {
       adminId: userId,
       roundValue: dto.roundValue || 5,
       maxParticipants: dto.maxParticipants,
+      isPublic: dto.isPublic,
       members: [],
       rounds: [],
     });
@@ -70,6 +71,7 @@ export class CreateLeagueUseCase {
       adminId: league.adminId,
       roundValue: league.roundValue,
       maxParticipants: league.maxParticipants,
+      isPublic: league.isPublic ?? false,
       inviteToken: league.inviteToken,
       inviteTokenExpiresAt: league.inviteTokenExpiresAt,
       members: league.members.map((m) => ({

@@ -16,12 +16,12 @@ import { AddGuestMemberDto } from '@application/dtos/leagues/add-guest-member.dt
 import { LeagueResponseDto } from '@application/dtos/leagues/league-response.dto';
 import { LeagueMemberResponseDto } from '@application/dtos/leagues/league-member-response.dto';
 import { JwtAuthGuard } from '@presentation/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@presentation/guards/optional-jwt-auth.guard';
 import { LeagueAdminGuard } from '@presentation/guards/league-admin.guard';
 import { CurrentUser } from '@presentation/decorators/current-user.decorator';
 
 @ApiTags('Leagues')
 @Controller('leagues')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class LeaguesController {
   constructor(
@@ -36,6 +36,7 @@ export class LeaguesController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Criar nova liga' })
   @ApiResponse({ status: 201, description: 'Liga criada com sucesso', type: LeagueResponseDto })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
@@ -44,7 +45,19 @@ export class LeaguesController {
     return this.createLeagueUseCase.execute(user.sub, dto);
   }
 
+  @Post('join')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Entrar em uma liga via token de convite' })
+  @ApiResponse({ status: 200, description: 'Entrou na liga com sucesso', type: LeagueResponseDto })
+  @ApiResponse({ status: 400, description: 'Token inválido/expirado ou liga cheia' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({ status: 409, description: 'Já é membro' })
+  async join(@CurrentUser() user: { sub: string }, @Body() dto: JoinLeagueDto) {
+    return this.joinLeagueUseCase.execute(user.sub, dto);
+  }
+
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Listar ligas do usuário autenticado' })
   @ApiResponse({ status: 200, description: 'Lista de ligas', type: [LeagueResponseDto] })
   @ApiResponse({ status: 401, description: 'Não autenticado' })
@@ -53,18 +66,26 @@ export class LeaguesController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Obter detalhes de uma liga' })
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({
+    summary: 'Obter detalhes de uma liga',
+    description:
+      'Bearer opcional. Ligas públicas: qualquer pessoa vê dados sanitizados (sem chave Pix de membros nem token de convite). Membros veem tudo. Liga privada exige JWT e membro.',
+  })
   @ApiParam({ name: 'id', description: 'ID da liga' })
   @ApiResponse({ status: 200, description: 'Detalhes da liga', type: LeagueResponseDto })
-  @ApiResponse({ status: 401, description: 'Não autenticado' })
-  @ApiResponse({ status: 403, description: 'Usuário não é membro' })
+  @ApiResponse({ status: 401, description: 'Liga privada e não autenticado' })
+  @ApiResponse({ status: 403, description: 'Liga privada e usuário não é membro' })
   @ApiResponse({ status: 404, description: 'Liga não encontrada' })
-  async getLeagueDetails(@CurrentUser() user: { sub: string }, @Param('id') id: string) {
-    return this.getLeagueDetailsUseCase.execute(id, user.sub);
+  async getLeagueDetails(
+    @CurrentUser() user: { sub: string } | undefined,
+    @Param('id') id: string,
+  ) {
+    return this.getLeagueDetailsUseCase.execute(id, user?.sub);
   }
 
   @Put(':id')
-  @UseGuards(LeagueAdminGuard)
+  @UseGuards(JwtAuthGuard, LeagueAdminGuard)
   @ApiOperation({ summary: 'Atualizar liga (apenas admin)' })
   @ApiParam({ name: 'id', description: 'ID da liga' })
   @ApiResponse({ status: 200, description: 'Liga atualizada com sucesso', type: LeagueResponseDto })
@@ -77,7 +98,7 @@ export class LeaguesController {
   }
 
   @Post(':id/members')
-  @UseGuards(LeagueAdminGuard)
+  @UseGuards(JwtAuthGuard, LeagueAdminGuard)
   @ApiOperation({ summary: 'Adicionar membro convidado (apenas admin)' })
   @ApiParam({ name: 'id', description: 'ID da liga' })
   @ApiResponse({ status: 201, description: 'Convidado adicionado', type: LeagueMemberResponseDto })
@@ -90,7 +111,7 @@ export class LeaguesController {
   }
 
   @Delete(':id/members/:memberId')
-  @UseGuards(LeagueAdminGuard)
+  @UseGuards(JwtAuthGuard, LeagueAdminGuard)
   @ApiOperation({ summary: 'Remover membro da liga (apenas admin)' })
   @ApiParam({ name: 'id', description: 'ID da liga' })
   @ApiParam({ name: 'memberId', description: 'userId do membro na liga' })
@@ -104,7 +125,7 @@ export class LeaguesController {
   }
 
   @Post(':id/invite-token')
-  @UseGuards(LeagueAdminGuard)
+  @UseGuards(JwtAuthGuard, LeagueAdminGuard)
   @ApiOperation({ summary: 'Gerar token de convite temporário' })
   @ApiParam({ name: 'id', description: 'ID da liga' })
   @ApiResponse({ status: 201, description: 'Token gerado com sucesso' })
@@ -113,15 +134,5 @@ export class LeaguesController {
   @ApiResponse({ status: 404, description: 'Liga não encontrada' })
   async generateInviteToken(@Param('id') id: string, @Body() dto: GenerateInviteTokenDto) {
     return this.generateInviteTokenUseCase.execute(id, dto);
-  }
-
-  @Post('join')
-  @ApiOperation({ summary: 'Entrar em uma liga via token de convite' })
-  @ApiResponse({ status: 200, description: 'Entrou na liga com sucesso', type: LeagueResponseDto })
-  @ApiResponse({ status: 400, description: 'Token inválido/expirado ou liga cheia' })
-  @ApiResponse({ status: 401, description: 'Não autenticado' })
-  @ApiResponse({ status: 409, description: 'Já é membro' })
-  async join(@CurrentUser() user: { sub: string }, @Body() dto: JoinLeagueDto) {
-    return this.joinLeagueUseCase.execute(user.sub, dto);
   }
 }

@@ -8,6 +8,7 @@ export class League {
   adminId: string;
   roundValue: number;
   maxParticipants: number;
+  isPublic: boolean;
   inviteToken?: string;
   inviteTokenExpiresAt?: Date;
   members: LeagueMember[];

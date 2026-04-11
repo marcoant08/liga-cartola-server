@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { ILeagueRepository, LEAGUE_REPOSITORY } from '@domain/interfaces/repositories/league.repository.interface';
 import { LeagueResponseDto } from '@application/dtos/leagues/league-response.dto';
@@ -7,37 +12,48 @@ import { LeagueResponseDto } from '@application/dtos/leagues/league-response.dto
 export class GetLeagueDetailsUseCase {
   constructor(@Inject(LEAGUE_REPOSITORY) private leagueRepository: ILeagueRepository) {}
 
-  async execute(leagueId: string, userId: string): Promise<LeagueResponseDto> {
+  async execute(leagueId: string, userId?: string): Promise<LeagueResponseDto> {
     const league = await this.leagueRepository.findById(leagueId);
     if (!league) {
       throw new NotFoundException('Liga não encontrada');
     }
 
-    // Verificar se usuário é membro
-    const isMember = await this.leagueRepository.checkMemberExists(leagueId, userId);
-    if (!isMember) {
+    const isPublic = league.isPublic ?? false;
+    const isMember = userId
+      ? await this.leagueRepository.checkMemberExists(leagueId, userId)
+      : false;
+
+    if (isMember) {
+      return this.toResponseDto(league, true);
+    }
+
+    if (!isPublic) {
+      if (!userId) {
+        throw new UnauthorizedException(
+          'Esta liga é privada (isPublic: false ou não definido). Sem token, só ligas públicas são acessíveis. Peça ao administrador para enviar PUT /leagues/:id com { "isPublic": true } ou autentique-se como membro.',
+        );
+      }
       throw new ForbiddenException('Você não é membro desta liga');
     }
 
-    return this.toResponseDto(league);
+    return this.toResponseDto(league, false);
   }
 
-  private toResponseDto(league: any): LeagueResponseDto {
-    return {
+  private toResponseDto(league: any, full: boolean): LeagueResponseDto {
+    const dto: LeagueResponseDto = {
       id: league.id,
       name: league.name,
       description: league.description,
       adminId: league.adminId,
       roundValue: league.roundValue,
       maxParticipants: league.maxParticipants,
-      inviteToken: league.inviteToken,
-      inviteTokenExpiresAt: league.inviteTokenExpiresAt,
+      isPublic: league.isPublic ?? false,
       members: league.members.map((m: any) => ({
         userId: m.userId,
         userName: m.userName,
         joinedAt: m.joinedAt,
         isGuest: !!m.isGuest,
-        pixKey: m.pixKey ?? '',
+        pixKey: full ? (m.pixKey ?? '') : '',
         teamName: m.teamName ?? '',
       })),
       rounds: league.rounds.map((r: any) => ({
@@ -49,5 +65,12 @@ export class GetLeagueDetailsUseCase {
       createdAt: league.createdAt,
       updatedAt: league.updatedAt,
     };
+
+    if (full) {
+      dto.inviteToken = league.inviteToken;
+      dto.inviteTokenExpiresAt = league.inviteTokenExpiresAt;
+    }
+
+    return dto;
   }
 }

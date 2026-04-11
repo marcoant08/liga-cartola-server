@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, Min, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsNumber, Min, IsNotEmpty, MaxLength, IsBoolean } from 'class-validator';
 
 export class CreateLeagueDto {
   @ApiProperty({ example: 'Liga dos Campeões' })
@@ -23,4 +23,8 @@ export class CreateLeagueDto {
   @IsNumber()
   @Min(2)
   maxParticipants: number;
+
+  @ApiProperty({ example: false, description: 'Se true, detalhes e rodadas podem ser lidos sem ser membro' })
+  @IsBoolean()
+  isPublic: boolean;
 }

@@ -21,6 +21,9 @@ export class LeagueResponseDto {
   @ApiProperty()
   maxParticipants: number;
 
+  @ApiProperty({ description: 'Liga visível sem login (somente leitura sanitizada para não membros)' })
+  isPublic: boolean;
+
   @ApiProperty({ required: false })
   inviteToken?: string;
 

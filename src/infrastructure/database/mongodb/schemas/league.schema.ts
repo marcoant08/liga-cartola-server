@@ -59,6 +59,9 @@ export class League {
   @Prop({ required: true })
   maxParticipants: number;
 
+  @Prop({ required: true, default: false })
+  isPublic: boolean;
+
   @Prop()
   inviteToken?: string;
 

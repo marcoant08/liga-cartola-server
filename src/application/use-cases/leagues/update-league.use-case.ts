@@ -27,6 +27,7 @@ export class UpdateLeagueUseCase {
       adminId: league.adminId,
       roundValue: league.roundValue,
       maxParticipants: league.maxParticipants,
+      isPublic: league.isPublic ?? false,
       inviteToken: league.inviteToken,
       inviteTokenExpiresAt: league.inviteTokenExpiresAt,
       members: league.members.map((m: any) => ({

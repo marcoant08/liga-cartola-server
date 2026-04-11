@@ -20,6 +20,7 @@ import { USER_REPOSITORY } from '@domain/interfaces/repositories/user.repository
 import { League, LeagueSchema } from '@infrastructure/database/mongodb/schemas/league.schema';
 import { User, UserSchema } from '@infrastructure/database/mongodb/schemas/user.schema';
 import { LeagueAdminGuard } from '@presentation/guards/league-admin.guard';
+import { OptionalJwtAuthGuard } from '@presentation/guards/optional-jwt-auth.guard';
 import { JwtStrategy } from '@presentation/strategies/jwt.strategy';
 
 const useCases: Provider[] = [
@@ -34,7 +35,7 @@ const useCases: Provider[] = [
   GetLeagueRoundsUseCase,
 ];
 
-const guardsAndStrategies: Provider[] = [LeagueAdminGuard, JwtStrategy];
+const guardsAndStrategies: Provider[] = [LeagueAdminGuard, OptionalJwtAuthGuard, JwtStrategy];
 
 const repositories: Provider[] = [
   { provide: USER_REPOSITORY, useClass: UserRepository },

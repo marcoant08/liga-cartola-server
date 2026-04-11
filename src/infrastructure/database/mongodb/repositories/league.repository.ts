@@ -7,6 +7,17 @@ import { LeagueMember } from '@domain/entities/league-member.entity';
 import { Round } from '@domain/entities/round.entity';
 import { League as LeagueSchema, LeagueDocument } from '../schemas/league.schema';
 
+function normalizeIsPublic(value: unknown): boolean {
+  if (value === true || value === 1) {
+    return true;
+  }
+  if (typeof value === 'string') {
+    const s = value.trim().toLowerCase();
+    return s === 'true' || s === '1';
+  }
+  return false;
+}
+
 @Injectable()
 export class LeagueRepository implements ILeagueRepository {
   constructor(
@@ -20,7 +31,7 @@ export class LeagueRepository implements ILeagueRepository {
   }
 
   async findById(id: string): Promise<League | null> {
-    const league = await this.leagueModel.findById(id).exec();
+    const league = await this.leagueModel.findById(id).lean().exec();
     return league ? this.toDomain(league as any) : null;
   }
 
@@ -30,6 +41,7 @@ export class LeagueRepository implements ILeagueRepository {
         inviteToken: token,
         inviteTokenExpiresAt: { $gt: new Date() },
       })
+      .lean()
       .exec();
     return league ? this.toDomain(league as any) : null;
   }
@@ -39,6 +51,7 @@ export class LeagueRepository implements ILeagueRepository {
       .findOne({
         inviteToken: token,
       })
+      .lean()
       .exec();
     return league ? this.toDomain(league as any) : null;
   }
@@ -46,6 +59,7 @@ export class LeagueRepository implements ILeagueRepository {
   async findByIds(leagueIds: string[]): Promise<League[]> {
     const leagues = await this.leagueModel
       .find({ _id: { $in: leagueIds } })
+      .lean()
       .exec();
     // @ts-ignore-next-line
     return leagues.map((league) => this.toDomain(league as any) as any);
@@ -54,11 +68,12 @@ export class LeagueRepository implements ILeagueRepository {
   async update(id: string, data: Partial<League>): Promise<League> {
     const updated = await this.leagueModel
       .findByIdAndUpdate(id, data, { new: true })
+      .lean()
       .exec();
     if (!updated) {
       throw new Error('League not found');
     }
-    return this.toDomain(updated);
+    return this.toDomain(updated as any);
   }
 
   async addMember(leagueId: string, member: LeagueMember): Promise<void> {
@@ -123,6 +138,7 @@ export class LeagueRepository implements ILeagueRepository {
       adminId: league.adminId,
       roundValue: league.roundValue,
       maxParticipants: league.maxParticipants,
+      isPublic: normalizeIsPublic(league.isPublic),
       inviteToken: league.inviteToken,
       inviteTokenExpiresAt: league.inviteTokenExpiresAt,
       members: (league.members || []).map(
