@@ -1,25 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { ILeagueRepository, LEAGUE_REPOSITORY } from '@domain/interfaces/repositories/league.repository.interface';
-import { IUserRepository, USER_REPOSITORY } from '@domain/interfaces/repositories/user.repository.interface';
 import { LeagueResponseDto } from '@application/dtos/leagues/league-response.dto';
 
 @Injectable()
-export class GetUserLeaguesUseCase {
-  constructor(
-    @Inject(LEAGUE_REPOSITORY) private leagueRepository: ILeagueRepository,
-    @Inject(USER_REPOSITORY) private userRepository: IUserRepository,
-  ) {}
+export class RemoveDeserterUseCase {
+  constructor(@Inject(LEAGUE_REPOSITORY) private leagueRepository: ILeagueRepository) {}
 
-  async execute(userId: string): Promise<LeagueResponseDto[]> {
-    const user = await this.userRepository.findById(userId);
-    if (!user || !user.leagues || user.leagues.length === 0) {
-      return [];
+  async execute(leagueId: string, memberId: string): Promise<LeagueResponseDto> {
+    const league = await this.leagueRepository.findById(leagueId);
+    if (!league) {
+      throw new NotFoundException('Liga não encontrada');
     }
 
-    const leagues = await this.leagueRepository.findByIds(user.leagues);
+    const deserter = league.deserters.find((d) => d.memberId === memberId);
+    if (!deserter) {
+      throw new NotFoundException('Desertor não encontrado nesta liga');
+    }
 
-    return leagues.map((league) => this.toResponseDto(league));
+    await this.leagueRepository.removeDeserter(leagueId, memberId);
+
+    const updatedLeague = await this.leagueRepository.findById(leagueId);
+    if (!updatedLeague) {
+      throw new NotFoundException('Liga não encontrada');
+    }
+
+    return this.toResponseDto(updatedLeague);
   }
 
   private toResponseDto(league: any): LeagueResponseDto {
@@ -47,7 +53,7 @@ export class GetUserLeaguesUseCase {
         winnerName: r.winnerName,
         registeredAt: r.registeredAt,
       })),
-      deserters: (league.deserters || []).map((d: any) => ({
+      deserters: league.deserters.map((d: any) => ({
         memberId: d.memberId,
         memberName: d.memberName,
         desertedAtRound: d.desertedAtRound,

@@ -88,6 +88,12 @@ export class CreateLeagueUseCase {
         winnerName: r.winnerName,
         registeredAt: r.registeredAt,
       })),
+      deserters: (league.deserters || []).map((d) => ({
+        memberId: d.memberId,
+        memberName: d.memberName,
+        desertedAtRound: d.desertedAtRound,
+        registeredAt: d.registeredAt,
+      })),
       createdAt: league.createdAt,
       updatedAt: league.updatedAt,
     };

@@ -1,6 +1,7 @@
 import { League } from '../../entities/league.entity';
 import { LeagueMember } from '../../entities/league-member.entity';
 import { Round } from '../../entities/round.entity';
+import { Deserter } from '../../entities/deserter.entity';
 
 export const LEAGUE_REPOSITORY = 'LEAGUE_REPOSITORY' as const;
 
@@ -15,4 +16,6 @@ export interface ILeagueRepository {
   removeMember(leagueId: string, userId: string): Promise<void>;
   addRound(leagueId: string, round: Round): Promise<void>;
   checkMemberExists(leagueId: string, userId: string): Promise<boolean>;
+  addDeserter(leagueId: string, deserter: Deserter): Promise<void>;
+  removeDeserter(leagueId: string, memberId: string): Promise<void>;
 }

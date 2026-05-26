@@ -42,6 +42,21 @@ export class Round {
   registeredAt: Date;
 }
 
+@Schema({ _id: false })
+export class Deserter {
+  @Prop({ required: true })
+  memberId: string;
+
+  @Prop({ required: true })
+  memberName: string;
+
+  @Prop({ required: true, min: 1, max: 38 })
+  desertedAtRound: number;
+
+  @Prop({ required: true, default: Date.now })
+  registeredAt: Date;
+}
+
 @Schema({ timestamps: true })
 export class League {
   @Prop({ required: true })
@@ -73,6 +88,9 @@ export class League {
 
   @Prop({ type: [Round], default: [] })
   rounds: Round[];
+
+  @Prop({ type: [Deserter], default: [] })
+  deserters: Deserter[];
 }
 
 export const LeagueSchema = SchemaFactory.createForClass(League);

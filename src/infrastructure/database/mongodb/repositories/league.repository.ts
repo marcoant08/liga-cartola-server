@@ -5,6 +5,7 @@ import { ILeagueRepository } from '@domain/interfaces/repositories/league.reposi
 import { League } from '@domain/entities/league.entity';
 import { LeagueMember } from '@domain/entities/league-member.entity';
 import { Round } from '@domain/entities/round.entity';
+import { Deserter } from '@domain/entities/deserter.entity';
 import { League as LeagueSchema, LeagueDocument } from '../schemas/league.schema';
 
 function normalizeIsPublic(value: unknown): boolean {
@@ -130,6 +131,29 @@ export class LeagueRepository implements ILeagueRepository {
     return !!league;
   }
 
+  async addDeserter(leagueId: string, deserter: Deserter): Promise<void> {
+    await this.leagueModel.findByIdAndUpdate(leagueId, {
+      $pull: { deserters: { memberId: deserter.memberId } },
+    });
+
+    await this.leagueModel.findByIdAndUpdate(leagueId, {
+      $push: {
+        deserters: {
+          memberId: deserter.memberId,
+          memberName: deserter.memberName,
+          desertedAtRound: deserter.desertedAtRound,
+          registeredAt: deserter.registeredAt,
+        },
+      },
+    });
+  }
+
+  async removeDeserter(leagueId: string, memberId: string): Promise<void> {
+    await this.leagueModel.findByIdAndUpdate(leagueId, {
+      $pull: { deserters: { memberId } },
+    });
+  }
+
   private toDomain(league: LeagueDocument): League {
     return new League({
       id: league._id.toString(),
@@ -159,6 +183,15 @@ export class LeagueRepository implements ILeagueRepository {
             winnerId: r.winnerId,
             winnerName: r.winnerName,
             registeredAt: r.registeredAt,
+          }),
+      ),
+      deserters: (league.deserters || []).map(
+        (d) =>
+          new Deserter({
+            memberId: d.memberId,
+            memberName: d.memberName,
+            desertedAtRound: d.desertedAtRound,
+            registeredAt: d.registeredAt,
           }),
       ),
       createdAt: league.createdAt,

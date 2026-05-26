@@ -1,5 +1,6 @@
 import { LeagueMember } from './league-member.entity';
 import { Round } from './round.entity';
+import { Deserter } from './deserter.entity';
 
 export class League {
   id: string;
@@ -13,6 +14,7 @@ export class League {
   inviteTokenExpiresAt?: Date;
   members: LeagueMember[];
   rounds: Round[];
+  deserters: Deserter[];
   createdAt: Date;
   updatedAt: Date;
 
@@ -20,5 +22,6 @@ export class League {
     Object.assign(this, partial);
     this.members = this.members || [];
     this.rounds = this.rounds || [];
+    this.deserters = this.deserters || [];
   }
 }

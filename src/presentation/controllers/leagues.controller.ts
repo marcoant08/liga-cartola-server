@@ -8,13 +8,17 @@ import { GenerateInviteTokenUseCase } from '@application/use-cases/leagues/gener
 import { JoinLeagueUseCase } from '@application/use-cases/leagues/join-league.use-case';
 import { AddGuestMemberUseCase } from '@application/use-cases/leagues/add-guest-member.use-case';
 import { RemoveLeagueMemberUseCase } from '@application/use-cases/leagues/remove-league-member.use-case';
+import { AddDeserterUseCase } from '@application/use-cases/leagues/add-deserter.use-case';
+import { RemoveDeserterUseCase } from '@application/use-cases/leagues/remove-deserter.use-case';
 import { CreateLeagueDto } from '@application/dtos/leagues/create-league.dto';
 import { UpdateLeagueDto } from '@application/dtos/leagues/update-league.dto';
 import { GenerateInviteTokenDto } from '@application/dtos/leagues/generate-invite-token.dto';
 import { JoinLeagueDto } from '@application/dtos/leagues/join-league.dto';
 import { AddGuestMemberDto } from '@application/dtos/leagues/add-guest-member.dto';
+import { AddDeserterDto } from '@application/dtos/leagues/add-deserter.dto';
 import { LeagueResponseDto } from '@application/dtos/leagues/league-response.dto';
 import { LeagueMemberResponseDto } from '@application/dtos/leagues/league-member-response.dto';
+import { DeserterResponseDto } from '@application/dtos/leagues/deserter-response.dto';
 import { JwtAuthGuard } from '@presentation/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '@presentation/guards/optional-jwt-auth.guard';
 import { LeagueAdminGuard } from '@presentation/guards/league-admin.guard';
@@ -33,6 +37,8 @@ export class LeaguesController {
     private joinLeagueUseCase: JoinLeagueUseCase,
     private addGuestMemberUseCase: AddGuestMemberUseCase,
     private removeLeagueMemberUseCase: RemoveLeagueMemberUseCase,
+    private addDeserterUseCase: AddDeserterUseCase,
+    private removeDeserterUseCase: RemoveDeserterUseCase,
   ) {}
 
   @Post()
@@ -122,6 +128,32 @@ export class LeaguesController {
   @ApiResponse({ status: 404, description: 'Liga ou membro não encontrado' })
   async removeMember(@Param('id') id: string, @Param('memberId') memberId: string) {
     return this.removeLeagueMemberUseCase.execute(id, memberId);
+  }
+
+  @Post(':id/deserters')
+  @UseGuards(JwtAuthGuard, LeagueAdminGuard)
+  @ApiOperation({ summary: 'Adicionar desertor à liga (apenas admin)' })
+  @ApiParam({ name: 'id', description: 'ID da liga' })
+  @ApiResponse({ status: 201, description: 'Desertor registrado', type: DeserterResponseDto })
+  @ApiResponse({ status: 400, description: 'Membro não encontrado ou já é desertor' })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({ status: 403, description: 'Não é admin' })
+  @ApiResponse({ status: 404, description: 'Liga não encontrada' })
+  async addDeserter(@Param('id') id: string, @Body() dto: AddDeserterDto) {
+    return this.addDeserterUseCase.execute(id, dto);
+  }
+
+  @Delete(':id/deserters/:memberId')
+  @UseGuards(JwtAuthGuard, LeagueAdminGuard)
+  @ApiOperation({ summary: 'Remover desertor da liga (apenas admin)' })
+  @ApiParam({ name: 'id', description: 'ID da liga' })
+  @ApiParam({ name: 'memberId', description: 'userId do membro desertor' })
+  @ApiResponse({ status: 200, description: 'Desertor removido', type: LeagueResponseDto })
+  @ApiResponse({ status: 401, description: 'Não autenticado' })
+  @ApiResponse({ status: 403, description: 'Não é admin' })
+  @ApiResponse({ status: 404, description: 'Liga ou desertor não encontrado' })
+  async removeDeserter(@Param('id') id: string, @Param('memberId') memberId: string) {
+    return this.removeDeserterUseCase.execute(id, memberId);
   }
 
   @Post(':id/invite-token')

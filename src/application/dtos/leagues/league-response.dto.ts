@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LeagueMemberResponseDto } from './league-member-response.dto';
+import { DeserterResponseDto } from './deserter-response.dto';
 import { RoundResponseDto } from '../rounds/round-response.dto';
 
 export class LeagueResponseDto {
@@ -35,6 +36,9 @@ export class LeagueResponseDto {
 
   @ApiProperty({ type: [RoundResponseDto] })
   rounds: RoundResponseDto[];
+
+  @ApiProperty({ type: [DeserterResponseDto] })
+  deserters: DeserterResponseDto[];
 
   @ApiProperty()
   createdAt: Date;
