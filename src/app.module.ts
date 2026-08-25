@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './presentation/modules/auth.module';
 import { UsersModule } from './presentation/modules/users.module';
 import { LeaguesModule } from './presentation/modules/leagues.module';
+import { PresenceModule } from './presentation/modules/presence.module';
 import { RoundsModule } from './presentation/modules/rounds.module';
 import { RootController } from './presentation/controllers/root.controller';
 
@@ -35,6 +36,7 @@ function mongoUriOrThrow(): string {
     AuthModule,
     UsersModule,
     LeaguesModule,
+    PresenceModule,
     RoundsModule,
   ],
   controllers: [RootController],
